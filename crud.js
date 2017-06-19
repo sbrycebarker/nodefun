@@ -1,40 +1,42 @@
 var db = require('./userData');
 
 module.exports = {
-
     index: function(req, res, next) {
-      console.log(req.query)
-      let field = req.query
-      var result = [];
-      for (var i = 0; i < db.length; i++) {
-        // console.log(db[i])
-        var key = db[i].favorites
 
+      let field = req.query
+      var result = db
+      if (req.query.age || req.query.lastname || req.query.email || req.query.favorites) {
+        var result = [];
+      for (var i = 0; i < db.length; i++) {
+        var key = db[i].favorites
           for (j in key) {
-            // console.log(key)
           if (key[j] == field.favorites) {
             result.push(db[i])
           }
         }
-
-        if (db[i].age < parseInt(field.age)) {
+        if (db[i].age < field.age) {
           result.push(db[i])
         }
-        // console.log(db[i].last_name)
-        if (db[i].last_name == field.last_name) {
-          // console.log("BAM")
+        if (db[i].last_name == field.lastname) {
           result.push(db[i])
+          // console.log(db[i])
         }
         if (db[i].email == field.email){
-          result.push(db[i].email)
+          var email = db[i]
+          console.log(email)
+          res.status(200).json(email)
         }
       }
+    }
       res.status(200).json(result)
-
-    },
+        },
     show: function(req, res, next) {
-      var id = req.params.id - 1 ;
+      var id = req.params.id -1;
+      if (db[parseInt(id)] == null) {
+        res.status(404).json(null)
+      } else {
       res.status(200).json(db[parseInt(id)])
+    }
     },
     admins: function(req, res, next) {
       var admins = []
@@ -55,25 +57,33 @@ module.exports = {
       res.status(200).json(nonadmins)
     },
     usertype: function(req, res, next){
-      console.log(req.params.userType)
-      var usertype = []
+      console.log(req.params)
+      var userType = []
       for (var i = 0; i < db.length; i++){
         if (db[i].type == req.params.userType){
-          usertype.push(db[i])
+          console.log(db[i].type)
+          userType.push(db[i])
         }
       }
-      res.status(200).json(usertype)
+      res.status(200).json(userType)
     },
     create: function(req, res, next) {
-      db.push(req.body)
-      res.status(200).json(db)
+      var result = db
+      var newUser = req.body
+      for (var  i = 0; i < db.length; i++) {
+        var last = []
+        last.push(db[i].id)
+      }
+      lastuser = last[last.length - 1]
+      newUser.id = lastuser + 1
+        result.push(newUser)
+      res.status(200).json(result)
     },
     update: function( req, res, next){
       var push = req.body
       console.log(push)
-      db[req.params.id] = push
+      db[req.params.id - 1] = push
       res.status(200).json(db)
-      console.log(db)
     }
     ,
     destroy: function(req, res, next) {
