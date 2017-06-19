@@ -1,24 +1,31 @@
-const express = require('express'),
-      bodyParser = require('body-parser');
+const express = require("express"),
+      bodyParser = require("body-parser"),
+      mongoose = require("mongoose");
 
+var app = express();
+app.use(bodyParser.json());
 
-  let app = express();
-  // app.use(express());
-  app.use(bodyParser.json());
+var users = require('./usersCtrl');
 
-var crud = require('./crud');
+// require('./userData');
 
-  app.get('/api/userdata', crud.read)
+app.get('/api/users/', users.index);
 
-  app.get('/api/userdata/:id', crud.show)
+app.get('/api/users/:id', users.show)
 
-  app.post('/api/userdata/', crud.create)
+app.get('/api/admins', users.admins)
 
-  app.put('/api/userdata/:id', crud.update)
+app.get('/api/nonadmins', users.nonadmins)
 
-  app.delete('/api/userdata/:id', crud.delete)
+app.get('/api/user_type/:userType', users.usertype)
 
-  app.use(express.static('./nodefun'))
+app.put('/api/users/:id', users.update)
+
+app.post('/api/users/', users.create)
+
+app.delete('/api/users/:id', users.destroy)
+
+app.use(express.static('./node-assessment-in-dev'))
 
 var port = 3000
 
